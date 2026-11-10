@@ -297,7 +297,222 @@ brideTab.addEventListener('click', () => {
 });
 
 $('share').addEventListener('click',async()=>{if(navigator.share){try{await navigator.share({title:document.title,url:location.href})}catch(e){}return}try{await navigator.clipboard.writeText(location.href);toast('청첩장 링크가 복사되었습니다.')}catch(e){prompt('청첩장 링크를 복사하세요',location.href)}});
-document.querySelectorAll('[data-photo]').forEach(el=>{const img=new Image(),filename=el.dataset.photo;img.onload=()=>{img.alt='웨딩 사진';el.append(img);el.classList.add('loaded');el.addEventListener('click',()=>{$('lightboxImage').src=img.src;$('lightbox').classList.add('open')})};img.src=`photos/${filename}`});const close=()=>$('lightbox').classList.remove('open');$('closeLightbox').addEventListener('click',close);$('lightbox').addEventListener('click',e=>{if(e.target===$('lightbox'))close()});document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});if('IntersectionObserver'in window){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el))}else document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
+
+/* ===== 웨딩 갤러리 ===== */
+
+// 갤러리 사진은 photo1.jpg ~ photo19.jpg
+const MAX_GALLERY_PHOTOS = 19;
+const PREVIEW_COUNT = 5;
+const galleryPhotos = [];
+
+const preview = document.getElementById('galleryPreview');
+const moreButton = document.getElementById('galleryMore');
+const totalLabel = document.getElementById('galleryTotal');
+
+const lightbox = document.getElementById('lightbox');
+const lightboxImage = document.getElementById('lightboxImage');
+const closeButton = document.getElementById('closeLightbox');
+
+let currentPhoto = 0;
+
+// 확대 화면에 버튼과 사진 번호 추가
+const prevButton = document.createElement('button');
+prevButton.type = 'button';
+prevButton.className = 'lightbox-nav prev';
+prevButton.textContent = '‹';
+prevButton.setAttribute('aria-label', '이전 사진');
+
+const nextButton = document.createElement('button');
+nextButton.type = 'button';
+nextButton.className = 'lightbox-nav next';
+nextButton.textContent = '›';
+nextButton.setAttribute('aria-label', '다음 사진');
+
+const counter = document.createElement('div');
+counter.className = 'lightbox-counter';
+counter.setAttribute('aria-live', 'polite');
+
+closeButton.classList.add('lightbox-close');
+lightbox.append(prevButton, nextButton, counter);
+
+// 사진 확대
+function openGallery(index) {
+  if (!galleryPhotos.length) return;
+
+  currentPhoto = index;
+  updateGallery();
+
+  lightbox.classList.add('open');
+  document.body.classList.add('gallery-open');
+  closeButton.focus();
+}
+
+// 현재 사진 표시
+function updateGallery() {
+  lightboxImage.src = galleryPhotos[currentPhoto];
+  lightboxImage.alt =
+    `웨딩 사진 ${currentPhoto + 1}`;
+
+  counter.textContent =
+    `${currentPhoto + 1} / ${galleryPhotos.length}`;
+
+  const multiple = galleryPhotos.length > 1;
+  prevButton.hidden = !multiple;
+  nextButton.hidden = !multiple;
+}
+
+// 이전 / 다음 사진
+function moveGallery(direction) {
+  if (!galleryPhotos.length) return;
+
+  currentPhoto =
+    (currentPhoto + direction + galleryPhotos.length)
+    % galleryPhotos.length;
+
+  updateGallery();
+}
+
+// 닫기
+function closeGallery() {
+  lightbox.classList.remove('open');
+  document.body.classList.remove('gallery-open');
+}
+
+closeButton.addEventListener('click', closeGallery);
+
+prevButton.addEventListener('click', () => {
+  moveGallery(-1);
+});
+
+nextButton.addEventListener('click', () => {
+  moveGallery(1);
+});
+
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox) closeGallery();
+});
+
+document.addEventListener('keydown', e => {
+  if (!lightbox.classList.contains('open')) return;
+
+  if (e.key === 'Escape') closeGallery();
+  if (e.key === 'ArrowLeft') moveGallery(-1);
+  if (e.key === 'ArrowRight') moveGallery(1);
+});
+
+// 모바일 좌우 스와이프
+let touchStartX = 0;
+let touchStartY = 0;
+
+lightbox.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+
+lightbox.addEventListener('touchend', e => {
+  const dx =
+    e.changedTouches[0].screenX - touchStartX;
+  const dy =
+    e.changedTouches[0].screenY - touchStartY;
+
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    moveGallery(dx < 0 ? 1 : -1);
+  }
+}, { passive: true });
+
+// 사진 존재 여부 확인
+function loadPhoto(src) {
+  return new Promise(resolve => {
+    const img = new Image();
+
+    img.onload = () => resolve(src);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+// 대표 사진 main.jpg는 기존 방식 유지
+const heroPhoto = document.querySelector(
+  '.hero-photo[data-photo]'
+);
+
+if (heroPhoto) {
+  const img = new Image();
+
+  img.onload = () => {
+    img.alt = '메인 웨딩 사진';
+    heroPhoto.append(img);
+    heroPhoto.classList.add('loaded');
+  };
+
+  img.src = 'photos/main.jpg';
+}
+
+// 갤러리 자동 생성
+async function initializeGallery() {
+  const sources = Array.from(
+    { length: MAX_GALLERY_PHOTOS },
+    (_, i) => `photos/photo${i + 1}.jpg`
+  );
+
+  const results = await Promise.all(
+    sources.map(loadPhoto)
+  );
+
+  results.filter(Boolean).forEach(src => {
+    galleryPhotos.push(src);
+  });
+
+  // 업로드된 사진이 없으면 기존 자리 표시 유지
+  if (!galleryPhotos.length) return;
+
+  preview.innerHTML = '';
+
+  galleryPhotos
+    .slice(0, PREVIEW_COUNT)
+    .forEach((src, index) => {
+      const item = document.createElement('div');
+      item.className = 'photo';
+      item.tabIndex = 0;
+      item.setAttribute('role', 'button');
+      item.setAttribute(
+        'aria-label',
+        `웨딩 사진 ${index + 1} 크게 보기`
+      );
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `웨딩 사진 ${index + 1}`;
+      img.loading = 'lazy';
+
+      item.append(img);
+
+      item.addEventListener('click', () => {
+        openGallery(index);
+      });
+
+      item.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openGallery(index);
+        }
+      });
+
+      preview.append(item);
+    });
+
+  totalLabel.textContent =
+    `(${galleryPhotos.length})`;
+
+  moreButton.hidden = false;
+}
+
+moreButton.addEventListener('click', () => {
+  openGallery(0);
+});
+
+initializeGallery();
+if('IntersectionObserver'in window){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el))}else document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
 // RSVP form. Cross-origin Apps Script cannot return a readable response from GitHub Pages with no-cors.
 const rsvp=$('rsvpForm'),countField=$('guestCountField'),status=$('rsvpStatus'),submit=$('rsvpSubmit');function syncAttendance(){countField.hidden=rsvp.elements.attendance.value==='불참'}rsvp.querySelectorAll('input[name="attendance"]').forEach(el=>el.addEventListener('change',syncAttendance));syncAttendance();
 rsvp.addEventListener('submit',async e=>{e.preventDefault();if(!rsvp.reportValidity())return;if(!RSVP_SCRIPT_URL.startsWith('https://script.google.com/macros/s/')||!RSVP_SCRIPT_URL.endsWith('/exec')){status.textContent='아직 참석 접수 기능이 연결되지 않았습니다. 관리자에게 알려주세요.';return}const attendance=rsvp.elements.attendance.value,params=new URLSearchParams({side:rsvp.elements.side.value,attendance,name:$('guestName').value.trim(),count:attendance==='참석'?$('guestCount').value:'0'});if(!params.get('name')){status.textContent='성함을 입력해 주세요.';return}submit.disabled=true;status.textContent='참석 정보를 전송하고 있습니다...';try{await fetch(RSVP_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},body:params.toString()});status.textContent='전송 요청이 완료되었습니다. 최종 저장 여부는 담당자에게 확인해 주세요.';rsvp.reset();syncAttendance()}catch(err){status.textContent='전송하지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.'}finally{submit.disabled=false}});

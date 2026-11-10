@@ -203,18 +203,106 @@ body.gallery-open {
   </button>
 </section>
 
-<section class="venue-section"><div class="reveal"><div class="kicker">LOCATION</div><h2 class="serif">The Place.</h2><div class="hairline"></div><div class="venue-card"><div class="kicker">WE'LL SEE YOU AT</div><div class="venue-name" id="venueName"></div><div class="venue-hall" id="venueHall"></div><div style="display:flex;justify-content:center;gap:32px;margin:22px 0;text-align:center;">
-  <div>
-    <div style="font-size:10px;letter-spacing:2px;color:#b59a75;">WEDDING HALL</div>
-    <div style="font-size:24px;margin:7px 0;">12F</div>
-    <div style="font-size:12px;">그랜드볼룸</div>
+
+<section class="venue-section">
+  <div class="reveal">
+    <div class="kicker">LOCATION</div>
+    <h2 class="serif">The Place.</h2>
+    <div class="hairline"></div>
+
+    <div class="venue-card" style="text-align:center;">
+
+      <!-- 장소명 -->
+      <div class="venue-name" id="venueName"></div>
+      <div class="venue-hall" id="venueHall"></div>
+
+      <!-- 층별 안내 -->
+      <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:0;
+        max-width:280px;
+        margin:28px auto;
+        text-align:center;
+      ">
+        <div style="border-right:1px solid #e2d9cb;">
+          <div style="font-size:25px;color:#342d27;">12F</div>
+          <div style="font-size:12px;color:#806749;margin-top:7px;">예식장</div>
+        </div>
+        <div>
+          <div style="font-size:25px;color:#342d27;">11F</div>
+          <div style="font-size:12px;color:#806749;margin-top:7px;">연회장</div>
+        </div>
+      </div>
+
+      <!-- 구분선 -->
+      <div style="
+        height:1px;
+        background:#e2d9cb;
+        margin:0 auto 24px;
+        max-width:280px;
+      "></div>
+
+      <!-- 주소 -->
+      <p class="venue-address"
+         id="venueAddress"
+         style="margin:0;text-align:center;">
+      </p>
+
+      <!-- 날짜와 시간 -->
+      <div style="
+        margin:16px auto 0;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:6px;
+        text-align:center;
+      ">
+        <div style="
+          font-size:13px;
+          color:#665a4e;
+          letter-spacing:.04em;
+          white-space:nowrap;
+        ">2027. 03. 13. SAT</div>
+
+        <div style="
+          font-size:13px;
+          color:#665a4e;
+          letter-spacing:.04em;
+        ">PM 5:30</div>
+      </div>
+
+      <!-- 기존 스크립트 호환용 -->
+      <p id="venueTime" hidden></p>
+
+      <!-- 지도 버튼 -->
+     
+<div class="button-row" style="
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  max-width:300px;
+  margin:25px auto 0;
+">
+  <a class="btn" id="naver"
+     target="_blank"
+     rel="noopener noreferrer"
+     style="width:100%;text-align:center;justify-content:center;">
+    네이버 지도
+  </a>
+
+  <a class="btn" id="kakao"
+     target="_blank"
+     rel="noopener noreferrer"
+     style="width:100%;text-align:center;justify-content:center;">
+    카카오맵
+  </a>
+</div>
+
+    </div>
   </div>
-  <div>
-    <div style="font-size:10px;letter-spacing:2px;color:#b59a75;">BANQUET HALL</div>
-    <div style="font-size:24px;margin:7px 0;">11F</div>
-    <div style="font-size:12px;">연회장</div>
-  </div>
-</div><p class="venue-address" id="venueAddress"></p><p class="venue-address" id="venueTime"></p><div class="button-row"><a class="btn" id="naver" target="_blank" rel="noopener noreferrer">네이버 지도</a><a class="btn" id="kakao" target="_blank" rel="noopener noreferrer">카카오맵</a></div></div></div></section>
+</section>
+
 <section class="rsvp-section"><div class="reveal"><div class="kicker">R S V P</div><h2 class="serif">참석 여부 알리기</h2><p class="rsvp-description">소중한 발걸음을 미리 알려주시면<br>감사한 마음으로 준비하겠습니다.</p><form class="rsvp-form" id="rsvpForm"><div class="form-field"><span class="form-label">어느 분의 하객이신가요?</span><div class="choice-row"><label><input type="radio" name="side" value="신랑측" required checked><span>신랑측</span></label><label><input type="radio" name="side" value="신부측"><span>신부측</span></label></div></div><div class="form-field"><span class="form-label">참석 여부</span><div class="choice-row"><label><input type="radio" name="attendance" value="참석" checked><span>참석</span></label><label><input type="radio" name="attendance" value="불참"><span>불참</span></label></div></div><div class="form-field"><label class="form-label" for="guestName">성함</label><input class="form-input" id="guestName" name="guestName" type="text" maxlength="30" autocomplete="name" placeholder="성함을 입력해 주세요" required></div><div class="form-field" id="guestCountField"><label class="form-label" for="guestCount">참석 인원 (본인 포함)</label><select class="form-input" id="guestCount" name="guestCount"><option value="1">1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option><option value="6">6명 이상</option></select></div><button class="form-submit" type="submit" id="rsvpSubmit">참석 여부 전달하기</button><p class="form-status" id="rsvpStatus" role="status" aria-live="polite"></p><p class="form-note">입력하신 성함과 참석 정보는 예식 참석 인원 확인을 위해 사용됩니다. 중복 제출 시 각각 기록될 수 있습니다.</p></form></div></section>
 <section class="account-section"><div class="reveal"><div class="kicker">WITH GRATITUDE</div><h2 class="serif">마음 전하기</h2><p style="font-size:12px;color:#665a4e">멀리서도 축하해 주시는 마음에 감사드립니다.</p>
 <div class="account-tabs" role="tablist" aria-label="계좌 구분">

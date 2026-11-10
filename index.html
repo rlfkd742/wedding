@@ -82,11 +82,127 @@
   outline-offset: 2px;
 }
 
+/* 갤러리 미리보기 */
+.gallery-more {
+  display: block;
+  width: 100%;
+  margin: 35px auto 0;
+  padding: 15px 20px;
+  background: transparent;
+  border: 1px solid #d5c2a6;
+  color: #fffaf2;
+  font-size: 12px;
+  letter-spacing: .08em;
+}
+
+.gallery-more[hidden] {
+  display: none;
+}
+
+.gallery-more span {
+  margin-left: 5px;
+  opacity: .8;
+}
+
+.gallery .photo img {
+  transition: transform .35s ease;
+}
+
+.gallery .photo:hover img {
+  transform: scale(1.04);
+}
+
+.gallery .photo:focus-visible {
+  outline: 2px solid #e9d5b7;
+  outline-offset: 4px;
+}
+
+/* 전체 화면 사진 감상 */
+.lightbox {
+  padding: 50px 14px 75px;
+  touch-action: pan-y;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 78dvh;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.lightbox-counter {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fffaf2;
+  font-size: 12px;
+  letter-spacing: .2em;
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 54px;
+  border: 0;
+  background: #17151280;
+  color: white;
+  font-size: 25px;
+  z-index: 2;
+}
+
+.lightbox-nav.prev {
+  left: 5px;
+}
+
+.lightbox-nav.next {
+  right: 5px;
+}
+
+.lightbox .lightbox-close {
+  top: 15px;
+  right: 15px;
+  transform: none;
+}
+
+body.gallery-open {
+  overflow: hidden;
+}
+
 </style></head><body><main>
 <section class="hero"><div class="hero-top"><span>THE WEDDING INVITATION</span><span>✦</span></div><div><h1 class="hero-title serif">Our<br><em>Wedding.</em></h1><div class="hero-frame"><div class="photo hero-photo" data-photo="main.jpg"><span class="photo-label">YOUR WEDDING PHOTO<br>photos/main.jpg</span></div></div></div><div class="hero-bottom"><p class="hero-names" id="names"></p><div class="hero-date" id="heroDate"></div><div class="scroll-cue">SCROLL TO EXPLORE</div></div></section>
 <section class="intro"><div class="reveal"><div class="kicker">A LOVE STORY</div><div class="symbol">❦</div><h2 class="serif">Together,<br>always.</h2><div class="hairline"></div><p id="message"></p><div class="hairline"></div><div class="quote serif">With love, we invite you.</div></div></section>
 <section class="date-section"><div class="reveal"><div class="kicker">SAVE THE DATE</div><div class="date-numeral" id="bigDate"></div><div class="date-year" id="year"></div><div class="date-detail" id="dateDetails"></div><div class="calendar-wrap"><div class="calendar-month" id="calendarMonth"></div><div class="calendar" id="calendar"></div></div><div class="countdown" id="countdown"></div></div></section>
-<section class="gallery-section"><div class="reveal"><div class="kicker">OUR MOMENTS</div><h2 class="serif">The Gallery.</h2><p class="gallery-note">소중한 순간들을 이곳에 담을 예정입니다.</p></div><div class="gallery"><div class="photo" data-photo="photo1.jpg"><span class="photo-label">PHOTO 01</span></div><div class="photo" data-photo="photo2.jpg"><span class="photo-label">PHOTO 02</span></div><div class="photo" data-photo="photo3.jpg"><span class="photo-label">PHOTO 03</span></div><div class="photo" data-photo="photo4.jpg"><span class="photo-label">PHOTO 04</span></div><div class="photo" data-photo="photo5.jpg"><span class="photo-label">PHOTO 05</span></div></div></section>
+
+  <section class="gallery-section">
+  <div class="reveal">
+    <div class="kicker">OUR MOMENTS</div>
+    <h2 class="serif">The Gallery.</h2>
+    <p class="gallery-note">우리의 소중한 순간들</p>
+  </div>
+
+  <div class="gallery" id="galleryPreview">
+    <div class="photo"><span class="photo-label">PHOTO 01</span></div>
+    <div class="photo"><span class="photo-label">PHOTO 02</span></div>
+    <div class="photo"><span class="photo-label">PHOTO 03</span></div>
+    <div class="photo"><span class="photo-label">PHOTO 04</span></div>
+    <div class="photo"><span class="photo-label">PHOTO 05</span></div>
+  </div>
+
+  <button
+    type="button"
+    class="gallery-more"
+    id="galleryMore"
+    hidden>
+    전체 사진 보기
+    <span id="galleryTotal"></span>
+    <span aria-hidden="true">↗</span>
+  </button>
+</section>
+
 <section class="venue-section"><div class="reveal"><div class="kicker">LOCATION</div><h2 class="serif">The Place.</h2><div class="hairline"></div><div class="venue-card"><div class="kicker">WE'LL SEE YOU AT</div><div class="venue-name" id="venueName"></div><div class="venue-hall" id="venueHall"></div><p class="venue-address" id="venueAddress"></p><p class="venue-address" id="venueTime"></p><div class="button-row"><a class="btn" id="naver" target="_blank" rel="noopener noreferrer">네이버 지도</a><a class="btn" id="kakao" target="_blank" rel="noopener noreferrer">카카오맵</a></div></div></div></section>
 <section class="rsvp-section"><div class="reveal"><div class="kicker">R S V P</div><h2 class="serif">참석 여부 알리기</h2><p class="rsvp-description">소중한 발걸음을 미리 알려주시면<br>감사한 마음으로 준비하겠습니다.</p><form class="rsvp-form" id="rsvpForm"><div class="form-field"><span class="form-label">어느 분의 하객이신가요?</span><div class="choice-row"><label><input type="radio" name="side" value="신랑측" required checked><span>신랑측</span></label><label><input type="radio" name="side" value="신부측"><span>신부측</span></label></div></div><div class="form-field"><span class="form-label">참석 여부</span><div class="choice-row"><label><input type="radio" name="attendance" value="참석" checked><span>참석</span></label><label><input type="radio" name="attendance" value="불참"><span>불참</span></label></div></div><div class="form-field"><label class="form-label" for="guestName">성함</label><input class="form-input" id="guestName" name="guestName" type="text" maxlength="30" autocomplete="name" placeholder="성함을 입력해 주세요" required></div><div class="form-field" id="guestCountField"><label class="form-label" for="guestCount">참석 인원 (본인 포함)</label><select class="form-input" id="guestCount" name="guestCount"><option value="1">1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option><option value="6">6명 이상</option></select></div><button class="form-submit" type="submit" id="rsvpSubmit">참석 여부 전달하기</button><p class="form-status" id="rsvpStatus" role="status" aria-live="polite"></p><p class="form-note">입력하신 성함과 참석 정보는 예식 참석 인원 확인을 위해 사용됩니다. 중복 제출 시 각각 기록될 수 있습니다.</p></form></div></section>
 <section class="account-section"><div class="reveal"><div class="kicker">WITH GRATITUDE</div><h2 class="serif">마음 전하기</h2><p style="font-size:12px;color:#665a4e">멀리서도 축하해 주시는 마음에 감사드립니다.</p>

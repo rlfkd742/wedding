@@ -136,6 +136,23 @@ main {
   background: #b6a082;
 }
 
+  
+/* 계좌 그룹 간격 및 글씨 색상 */
+
+.account-subgroup {
+  margin-bottom: 32px;
+}
+
+.account-subgroup .account-head {
+  color: #594a3c;
+  font-weight: 600;
+}
+
+.account-subgroup .account-item strong {
+  color: #342d27;
+}
+
+  
 </style></head><body><main>
 <section class="hero dark"><div class="hero-top"><span>THE WEDDING INVITATION</span><span>✦</span></div><div><h1 class="hero-title serif">Our<br><em>Wedding.</em></h1><div class="hero-frame"><div class="photo hero-photo" data-photo="main.jpg"><span class="photo-label">YOUR WEDDING PHOTO<br>photos/main.jpg</span></div></div></div><div class="hero-bottom"><p class="hero-names" id="names"></p><div class="hero-date" id="heroDate"></div><div class="scroll-cue">SCROLL TO EXPLORE</div></div></section>
 <section class="intro"><div class="reveal"><div class="kicker">A LOVE STORY</div><div class="symbol">❦</div><h2 class="serif">Together,<br>always.</h2><div class="hairline"></div><p id="message"></p><div class="hairline"></div><div class="quote serif">With love, we invite you.</div></div></section>
@@ -156,7 +173,81 @@ main {
 <script src="config.js"></script><script>
 (()=>{'use strict';const c=window.WEDDING_CONFIG;if(!c){document.body.insertAdjacentHTML('afterbegin','<p>config.js 파일을 확인해주세요.</p>');return}const $=id=>document.getElementById(id);const pad=n=>String(n).padStart(2,'0');const [y,m,d]=c.date.split('-').map(Number);const [hh,mm]=c.time.split(':').map(Number);const wedding=new Date(`${c.date}T${c.time}:00+09:00`);const weekday=['일','월','화','수','목','금','토'][new Date(y,m-1,d).getDay()];const dateText=`${y}년 ${m}월 ${d}일 (${weekday})`;const timeText=`${hh<12?'오전':'오후'} ${hh%12||12}시${mm?' '+pad(mm)+'분':''}`;const names=`${c.groomName}  ·  ${c.brideName}`;$('names').textContent=names;$('closingNames').textContent=names;$('heroDate').textContent=`${y}.${pad(m)}.${pad(d)}  |  ${pad(hh)}:${pad(mm)}`;$('bigDate').textContent=`${pad(m)}.${pad(d)}`;$('year').textContent=y;$('dateDetails').textContent=`${dateText}  ${timeText}`;$('closingDate').textContent=dateText;$('message').textContent=c.message;$('venueName').textContent=c.venue;$('venueHall').textContent=c.hall;$('venueAddress').textContent=c.address;$('venueTime').textContent=`${dateText} · ${timeText}`;document.title=`${c.groomName} ♥ ${c.brideName} | 모바일 청첩장`;const q=encodeURIComponent(`${c.venue} ${c.address}`);$('naver').href=`https://map.naver.com/p/search/${q}`;$('kakao').href=`https://map.kakao.com/link/search/${q}`;
 $('calendarMonth').textContent=`${y} / ${pad(m)}`;const cal=$('calendar');['일','월','화','수','목','금','토'].forEach(t=>{const el=document.createElement('div');el.className='weekday';el.textContent=t;cal.append(el)});for(let i=0;i<new Date(y,m-1,1).getDay();i++)cal.append(document.createElement('div'));for(let i=1;i<=new Date(y,m,0).getDate();i++){const cell=document.createElement('div');cell.className='day';if(i===d)cell.classList.add('chosen');cell.textContent=i;cal.append(cell)}function tick(){const days=Math.ceil((wedding-Date.now())/86400000);$('countdown').textContent=days>0?`D-${days}  ·  우리의 특별한 날까지`:days===0?'D-DAY  ·  오늘, 저희 결혼합니다':'함께해 주셔서 감사합니다.'}tick();setInterval(tick,60000);
-const toast=t=>{const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>el.classList.remove('show'),2300)};async function copyText(s){try{await navigator.clipboard.writeText(s);toast('계좌번호가 복사되었습니다.')}catch(e){prompt('아래 계좌번호를 복사하세요',s)}}function renderAccounts(target,items){const root=$(target);let count=0;(items||[]).forEach(a=>{if(!a.number)return;count++;const item=document.createElement('div');item.className='account-item';const left=document.createElement('div');const title=document.createElement('strong');title.textContent=a.label||'계좌 안내';const detail=document.createElement('small');detail.textContent=`${a.bank||''} ${a.number} · ${a.holder||''}`;left.append(title,detail);const btn=document.createElement('button');btn.type='button';btn.textContent='복사';btn.addEventListener('click',()=>copyText(a.number));item.append(left,btn);root.append(item)});if(!count){const empty=document.createElement('div');empty.className='empty';empty.textContent='계좌정보 입력 예정';root.append(empty)}}renderAccounts('groomAccounts',c.groomAccounts);renderAccounts('brideAccounts',c.brideAccounts);
-$('share').addEventListener('click',async()=>{if(navigator.share){try{await navigator.share({title:document.title,url:location.href})}catch(e){}return}try{await navigator.clipboard.writeText(location.href);toast('청첩장 링크가 복사되었습니다.')}catch(e){prompt('청첩장 링크를 복사하세요',location.href)}});
+const toast=t=>{const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>el.classList.remove('show'),2300)};async function copyText(s){try{await navigator.clipboard.writeText(s);toast('계좌번호가 복사되었습니다.')}catch(e){prompt('아래 계좌번호를 복사하세요',s)}}function renderAccounts(target,items){const root=$(target);let count=0;(items||[]).forEach(a=>{if(!a.number)return;count++;const item=document.createElement('div');item.className='account-item';const left=document.createElement('div');const title=document.createElement('strong');title.textContent=a.label||'계좌 안내';const detail=document.createElement('small');detail.textContent=`${a.bank||''} ${a.number} · ${a.holder||''}`;left.append(title,detail);const btn=document.createElement('button');btn.type='button';btn.textContent='복사';btn.addEventListener('click',()=>copyText(a.number));item.append(left,btn);root.append(item)});if(!count){const empty=document.createElement('div');empty.className='empty';empty.textContent='계좌정보 입력 예정';root.append(empty)}}renderAccounts('groomAccounts',c.groomAccounts);
+function renderAccounts(target, items) {
+  const root = $(target);
+  const side = target === 'groomAccounts' ? '신랑' : '신부';
+
+  // 기존 config.js 순서: 아버지, 어머니, 본인
+  const groups = [
+    {
+      title: side,
+      accounts: [
+        { ...((items || [])[2] || {}), role: '' }
+      ]
+    },
+    {
+      title: `${side} 혼주`,
+      accounts: [
+        { ...((items || [])[0] || {}), role: '부' },
+        { ...((items || [])[1] || {}), role: '모' }
+      ]
+    }
+  ];
+
+  groups.forEach(group => {
+    const section = document.createElement('div');
+    section.className = 'account-subgroup';
+
+    const heading = document.createElement('div');
+    heading.className = 'account-head';
+    heading.textContent = group.title;
+    section.append(heading);
+
+    let count = 0;
+
+    group.accounts.forEach(a => {
+      if (!a.number) return;
+      count++;
+
+      const item = document.createElement('div');
+      item.className = 'account-item';
+
+      const left = document.createElement('div');
+
+      const title = document.createElement('strong');
+      const name = a.holder || a.label || '';
+      title.textContent = a.role
+        ? `${a.role} · ${name}`
+        : name;
+
+      const detail = document.createElement('small');
+      detail.textContent = `${a.bank || ''} ${a.number}`;
+
+      left.append(title, detail);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = '복사';
+      btn.addEventListener('click', () => copyText(a.number));
+
+      item.append(left, btn);
+      section.append(item);
+    });
+
+    if (!count) {
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = '계좌정보 입력 예정';
+      section.append(empty);
+    }
+
+    root.append(section);
+  });
+}
+
+renderAccounts('groomAccounts', c.groomAccounts);
+renderAccounts('brideAccounts', c.brideAccounts);
+
 document.querySelectorAll('[data-photo]').forEach(el=>{const img=new Image();const filename=el.dataset.photo;img.onload=()=>{img.alt='웨딩 사진';el.append(img);el.classList.add('loaded');el.addEventListener('click',()=>{$('lightboxImage').src=img.src;$('lightbox').classList.add('open')})};img.src=`photos/${filename}`});const close=()=>{$('lightbox').classList.remove('open')};$('closeLightbox').addEventListener('click',close);$('lightbox').addEventListener('click',e=>{if(e.target===$('lightbox'))close()});document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});if('IntersectionObserver'in window){const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(el=>io.observe(el))}else document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'))})();
 </script></body></html>

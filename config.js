@@ -16,8 +16,8 @@ window.WEDDING_CONFIG = {
     { label: '홍기랑', bank: '토스뱅크', number: '1001-8672-3252', holder: '홍기랑' }
   ],
   brideAccounts: [
-    { label: '김상호', bank: '신한은행', number: '110-430-122095', holder: '김상호' },
-    { label: '김순이', bank: '신한은행', number: '110-430-122095', holder: '김순이' },
+    { label: '김상호', bank: '농협은행', number: '9002-1438-5258-0', holder: '김순이' },
+    { label: '김순이', bank: '농협은행', number: '9002-1438-5258-0', holder: '김순이' },
     { label: '김진희', bank: '신한은행', number: '110-430-122095', holder: '김진희' }
   ]
 };

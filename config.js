@@ -11,13 +11,13 @@ window.WEDDING_CONFIG = {
   // label: 표시 이름, bank: 은행명, number: 계좌번호, holder: 예금주
   // 부모님 계좌는 필요한 만큼 추가하거나 지울 수 있습니다.
   groomAccounts: [
-    { label: '홍백희', bank: '', number: '', holder: '' },
+    { label: '홍백희', bank: '농협은행', number: '168-02-269701', holder: '홍백희' },
     { label: '구인순', bank: '농협은행', number: '168-02-291401', holder: '구인순' },
     { label: '홍기랑', bank: '토스뱅크', number: '1001-8672-3252', holder: '홍기랑' }
   ],
   brideAccounts: [
-    { label: '김상호', bank: '', number: '', holder: '' },
-    { label: '김순이', bank: '', number: '', holder: '' },
+    { label: '김상호', bank: '신한은행', number: '110-430-122095', holder: '김순이' },
+    { label: '김순이', bank: '신한은행', number: '110-430-122095', holder: '김순이' },
     { label: '김진희', bank: '신한은행', number: '110-430-122095', holder: '김진희' }
   ]
 };

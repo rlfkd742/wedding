@@ -366,13 +366,16 @@ $('names').textContent=names;$('closingNames').textContent=names;$('heroDate').t
 $('calendarMonth').textContent=`${y} / ${pad(m)}`;const cal=$('calendar');['일','월','화','수','목','금','토'].forEach(t=>{const el=document.createElement('div');el.className='weekday';el.textContent=t;cal.append(el)});for(let i=0;i<new Date(y,m-1,1).getDay();i++)cal.append(document.createElement('div'));for(let i=1;i<=new Date(y,m,0).getDate();i++){const cell=document.createElement('div');cell.className='day';if(i===d)cell.classList.add('chosen');cell.textContent=i;cal.append(cell)}
 function tick(){const days=Math.ceil((wedding-Date.now())/86400000);$('countdown').textContent=days>0?`D-${days} · 우리의 특별한 날까지`:days===0?'D-DAY · 오늘, 저희 결혼합니다.':'함께해 주셔서 감사합니다.'}tick();setInterval(tick,60000);
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>el.classList.remove('show'),2300)}async function copyText(s){try{await navigator.clipboard.writeText(s);toast('계좌번호가 복사되었습니다.')}catch(e){prompt('아래 계좌번호를 복사하세요',s)}}
-function renderAccounts(target,items){const root=$(target),side=target==='groomAccounts'?'신랑':'신부',data=items||[],groups=[{title:side,accounts:[{...(data[2]||{}),role:''}]},{title:`${side} 혼주`,accounts:[{...(data[0]||{}),role:'부'},{...(data[1]||{}),role:'모'}]}];groups.forEach(group=>{const section=document.createElement('div');section.className='account-subgroup';const heading=document.createElement('div');heading.className='account-head';heading.textContent=group.title;section.append(heading);let count=0;group.accounts.forEach(a=>{if(!a.number)return;count++;const item=document.createElement('div');item.className='account-item';const left=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small');const name=a.holder||a.label||'';title.textContent=a.role?`${a.role} · ${name}`:name;
+function renderAccounts(target,items){const root=$(target),side=target==='groomAccounts'?'신랑':'신부',data=items||[],groups=[{title:side,accounts:[{...(data[2]||{}),role:''}]},{title:`${side} 혼주`,accounts:[{...(data[0]||{}),role:'부'},{...(data[1]||{}),role:'모'}]}];groups.forEach(group=>{const section=document.createElement('div');section.className='account-subgroup';const heading=document.createElement('div');heading.className='account-head';heading.textContent=group.title;section.append(heading);let count=0;group.accounts.forEach(a=>{if(!a.number)return;count++;const item=document.createElement('div');item.className='account-item';const left=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('small');
+const name = a.label || a.holder || '';
+title.textContent = a.role ? `${a.role} · ${name}` : name;
+
 const cleanNumber = String(a.number)
   .replace(/\s*\([^)]*\)\s*$/, '')
   .trim();
 
 detail.textContent =
-  `${a.bank||''} ${cleanNumber}${name ? ` (${name})` : ''}`.trim();
+  `${a.bank||''} ${cleanNumber}${a.holder ? ` (${a.holder})` : ''}`.trim();
 left.append(title,detail);const btn=document.createElement('button');btn.type='button';btn.textContent='복사';btn.addEventListener('click',()=>copyText(cleanNumber));item.append(left,btn);section.append(item)});if(!count){const empty=document.createElement('div');empty.className='empty';empty.textContent='계좌정보 입력 예정';section.append(empty)}root.append(section)})}renderAccounts('groomAccounts',c.groomAccounts);renderAccounts('brideAccounts',c.brideAccounts);
       
 /* 신랑측 / 신부측 탭 전환 */
